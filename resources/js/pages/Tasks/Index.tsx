@@ -140,8 +140,14 @@ export default function Index({ tasks }: TaskIndexProps) {
                                                 </td>
                                                 <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                                                     <Link
+                                                        href={`/tasks/${task.id}`}
+                                                        className="text-green-600 hover:text-green-900"
+                                                    >
+                                                        show<span className="sr-only">, {task.title}</span>
+                                                    </Link>
+                                                    <Link
                                                         href={`/tasks/${task.id}/edit`}
-                                                        className="text-indigo-600 hover:text-indigo-900"
+                                                        className="ml-4 text-indigo-600 hover:text-indigo-900"
                                                     >
                                                         edit<span className="sr-only">, {task.title}</span>
                                                     </Link>

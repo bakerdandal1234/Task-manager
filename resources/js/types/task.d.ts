@@ -43,6 +43,11 @@ export interface TaskEditProps {
     task: Task;
 }
 
+// Props لصفحة عرض المهمة
+export interface TaskShowProps {
+    task: Task;
+}
+
 // Props لصفحة إنشاء مهمة (عادةً فارغة لكن يمكن إضافة بيانات إضافية)
 export interface TaskCreateProps {
     // يمكن إضافة أي بيانات إضافية هنا إذا احتجت

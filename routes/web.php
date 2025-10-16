@@ -20,10 +20,15 @@ Route::middleware(['auth'])->group(function () {
     // صفحة قائمة المهام
     Route::get('/tasks', [TaskController::class, 'index'])
          ->name('tasks.index');
-    
-    // صفحة إنشاء مهمة جديدة
+
+         // صفحة إنشاء مهمة جديدة
     Route::get('/tasks/create', [TaskController::class, 'create'])
          ->name('tasks.create');
+
+     Route::get('/tasks/{task}', [TaskController::class, 'show'])
+         ->name('tasks.show');
+    
+    
     
     // حفظ المهمة الجديدة
     Route::post('/tasks', [TaskController::class, 'store'])

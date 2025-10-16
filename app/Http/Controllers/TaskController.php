@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreRequestValidate;
+use App\Http\Requests\UpdateRequestValidate;
 use App\Models\Task;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TaskController extends Controller
@@ -25,6 +26,18 @@ class TaskController extends Controller
         ]);
     }
 
+    public function show(Task $task)
+    {
+        // التأكد أن المهمة تخص المستخدم الحالي
+        if ($task->user_id !== auth()->id()) {
+            abort(403); // ممنوع!
+        }
+
+        return Inertia::render('Tasks/Show', [
+            'task' => $task
+        ]);
+    }
+
     /**
      * عرض صفحة إنشاء مهمة جديدة
      */
@@ -36,20 +49,11 @@ class TaskController extends Controller
     /**
      * حفظ المهمة الجديدة في قاعدة البيانات
      */
-    public function store(Request $request)
+    public function store(StoreRequestValidate $request)
     {
-        // التحقق من صحة البيانات المُدخلة
-        $validated = $request->validate([
-            'title' => 'required|string|max:255', // العنوان: مطلوب، نص، أقصى طول 255
-            'description' => 'nullable|string', // الوصف: اختياري، نص
-            'status' => 'required|in:pending,in_progress,completed', // الحالة: مطلوب، من القيم المحددة
-            'priority' => 'required|in:low,medium,high', // الأولوية: مطلوب، من القيم المحددة
-            'due_date' => 'nullable|date|after_or_equal:today', // تاريخ الاستحقاق: اختياري، تاريخ، من اليوم فصاعداً
-        ]);
-
         // إنشاء المهمة وربطها بالمستخدم الحالي
         Task::create([
-            ...$validated, // كل البيانات المُتحقق منها
+            ...$request->validated(), // كل البيانات المُتحقق منها
             'user_id' => auth()->id(), // ربط المهمة بالمستخدم
         ]);
 
@@ -76,24 +80,10 @@ class TaskController extends Controller
     /**
      * تحديث المهمة في قاعدة البيانات
      */
-    public function update(Request $request, Task $task)
+    public function update(UpdateRequestValidate $request, Task $task)
     {
-        // التأكد أن المهمة تخص المستخدم
-        if ($task->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        // التحقق من البيانات
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:pending,in_progress,completed',
-            'priority' => 'required|in:low,medium,high',
-            'due_date' => 'nullable|date|after_or_equal:today',
-        ]);
-
         // تحديث المهمة
-        $task->update($validated);
+        $task->update($request->validated());
 
         // العودة لصفحة المهام
         return redirect()->route('tasks.index')
